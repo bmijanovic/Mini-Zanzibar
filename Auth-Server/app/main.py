@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Query
+from app.schemas.AclDto import ACLRequest
 import uvicorn
-from Schemas.AclDto import ACLRequest
 
 app = FastAPI()
 

@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  consul:
+    image: consul:1.15.4
+    container_name: consul
+    ports:
+      - "8500:8500"
+      - "8600:8600/udp"
+    volumes:
+      - ./consul/data:/consul/data
+    command: "agent -dev -client 0.0.0.0"
+    networks:
+      - server_network
+
+  server:
+    build:
+      context: ./Auth-Server
+      dockerfile: Dockerfile
+    container_name: fastapi_auth_server
+    networks:
+      - server_network
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./Auth-Server/app:/Auth-Server/app
+      - ./Auth-Server/requirements.txt:/Auth-Server/requirements.txt
+      - ./Auth-Server/.env:/Auth-Server/.env
+    depends_on:
+      - consul
+
+networks:
+  server_network:
+    driver: bridge
