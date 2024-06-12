@@ -691,3 +691,4 @@ FodyWeavers.xsd
 # End of https://www.toptal.com/developers/gitignore/api/pycharm+all,python,visualstudio,visualstudiocode,git
 
 consul/
+Auth-Server/app/database/*
