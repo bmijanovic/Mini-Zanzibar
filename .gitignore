@@ -692,3 +692,4 @@ FodyWeavers.xsd
 
 consul/
 Auth-Server/app/leveldb_data/
+Auth-Server/app/database/
