@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 
-
 class ACL(BaseModel):
     object: str
     relation: str
