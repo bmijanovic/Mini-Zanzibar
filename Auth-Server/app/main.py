@@ -1,5 +1,4 @@
 import os
-import uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI, Query, Body
 
@@ -34,5 +33,5 @@ async def check_acl(object: str = Query(...), relation: str = Query(...), user: 
 
 @app.post("/namespace")
 async def create_namespace(namespace=Body(...)):
-    consul_db_handler.create_new_config(namespace)
-    return consul_db_handler.get_config()
+    await consul_db_handler.create_new_config(namespace)
+    return await consul_db_handler.get_config()

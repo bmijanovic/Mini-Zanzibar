@@ -1,44 +1,67 @@
+import asyncio
 import json
-import consul
+import consul.aio
 
 
 class ConsulDBHandler:
     def __init__(self, host='localhost', port=8500):
-        self.client = consul.Consul(host=host, port=port)
-        self.latest_version = self.get("latest_version")
-        if self.latest_version is None:
+        self.client = consul.aio.Consul(host=host, port=port)
+        self.latest_version = None
+        self.current_version = None
+        self.config = {}
+        self.loop = asyncio.get_event_loop()
+
+        self.loop.create_task(self.initialize())
+
+    async def initialize(self):
+        self.latest_version = await self.get("latest_version")
+        self.current_version = await self.get("current_version")
+        if self.latest_version is not None and self.current_version is not None:
+            self.config = await self.get(self.current_version)
+        else:
             self.current_version = "v0"
             self.latest_version = "v0"
             self.config = {}
-        else:
-            self.config = self.get(self.latest_version)
 
-    def create_new_config(self, new_config):
+        # self.loop.create_task(self.watch_for_current_version())
+
+    async def watch_for_current_version(self):
+        while True:
+            up_to_date_current_version = await self.get("current_version")
+            if self.current_version != up_to_date_current_version:
+                self.current_version = up_to_date_current_version
+                self.config = await self.get(self.current_version)
+            up_to_date_latest_version = await self.get("latest_version")
+            if self.latest_version != up_to_date_latest_version:
+                self.latest_version = up_to_date_latest_version
+            await asyncio.sleep(1)
+
+    async def create_new_config(self, new_config):
         new_version = 'v' + str(int(self.latest_version.lstrip("v")) + 1)
-        self.put(new_version, new_config)
-        self.put("latest_version", new_version)
+        await self.put(new_version, new_config)
+        await self.put("latest_version", new_version)
         self.latest_version = new_version
 
         # change to newly added config
-        self.change_config_to_version(str(new_version))
+        await self.change_config_to_version(str(new_version))
 
-    def change_config_to_version(self, version):
-        found_config = self.get(version)
+    async def change_config_to_version(self, version):
+        found_config = await self.get(version)
         if found_config is None:
             return
-        self.put("current_version", version)
+        await self.put("current_version", version)
         self.current_version = version
         self.config = found_config
 
-    def get_config(self):
+    async def get_config(self):
         return self.config
 
-    def put(self, key, value):
+    async def put(self, key, value):
         value_json = json.dumps(value)
-        self.client.kv.put(key, value_json)
+        await self.client.kv.put(key, value_json)
 
-    def get(self, key):
-        index, data = self.client.kv.get(key)
+    async def get(self, key):
+        index, data = await self.client.kv.get(key)
         if data and 'Value' in data:
             value_str = data['Value'].decode('utf-8')
             try:
