@@ -5,6 +5,8 @@ from fastapi import FastAPI, Query, Body
 from app.models import ACL
 from app.consul_db_handler import ConsulDBHandler
 from app.level_db_handler import LevelDBHandler
+from app.role_parser import *
+
 
 load_dotenv()
 LEVELDB_PATH = os.getenv("ACL_LEVELDB_PATH")
@@ -27,11 +29,18 @@ async def create_acl(acl_dto: ACL):
 
 @app.get("/acl/check")
 async def check_acl(object: str = Query(...), relation: str = Query(...), user: str = Query(...)):
-    acl = level_db_handler.get(f"{object}@{user}")
-    return {"authorized": acl is not None}
+    role = level_db_handler.get(f"{object}@{user}")
+    print("Role:", role)
+    if role is None:
+        return {"authorized": False}
+    namespace = consul_db_handler.get_config()
+    privileges = get_privileges(relation, namespace['relations'])
+    print("Privileges:", privileges)
+    return {"authorized": role in privileges}
 
 
 @app.post("/namespace")
 async def create_namespace(namespace=Body(...)):
     await consul_db_handler.create_new_config(namespace)
+    print(get_all_roles_with_privileges(consul_db_handler.get_config()))
     return await consul_db_handler.get_config()
