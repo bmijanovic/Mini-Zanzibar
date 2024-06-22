@@ -13,13 +13,15 @@ import {
 import 'tldraw/tldraw.css'
 import _jsonSnapshot from '../temp.json'
 import * as fs from "fs";
+import {useNavigate, useParams} from "react-router-dom";
 
 // There's a guide at the bottom of this file!
 
 const jsonSnapshot = _jsonSnapshot as any as TLEditorSnapshot
 
 
-export default function Board({readOnly}) {
+export default function Board() {
+    const { id } = useParams();
 
     function CustomMainMenu() {
 
@@ -57,7 +59,7 @@ export default function Board({readOnly}) {
         <div style={{ position: 'fixed', inset: 0 }} className="tldraw__editor">
             <Tldraw
                 onMount={(editor) => {
-                    editor.updateInstanceState({ isReadonly: readOnly })
+                    editor.updateInstanceState({ isReadonly: false })
                 }}
                 snapshot={jsonSnapshot}
                 components={components}

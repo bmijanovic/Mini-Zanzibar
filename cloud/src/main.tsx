@@ -23,7 +23,7 @@ const theme = createTheme({
 
 const router = createBrowserRouter([
     {path:"/login", element:<Login/>},
-    {path:"/board", element:<SingleBoard/>},
+    {path:"/board/:id", element:<SingleBoard/>},
     {path:"/boards", element:<Boards/>},
     {path:"*", element: <Navigate to="/boards" replace />},
 ])
