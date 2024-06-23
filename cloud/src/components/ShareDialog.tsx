@@ -1,13 +1,30 @@
 import {Box, FormControl, IconButton, InputLabel, List, MenuItem, Modal, Select, TextField} from "@mui/material";
 import {Add} from "@mui/icons-material";
 import {UserListItem} from "./UserListItem";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import axios from "axios";
+import {environment} from "../utils/Enviroment.tsx";
 
 
-export const ShareDialog=({open,setIsOpen})=>{
+export const ShareDialog=({open,setIsOpen,boardId})=>{
     const [newEmail, setNewEmail] = useState('');
     const [newRole, setNewRole] = useState('Viewer');
-    const [users, setUsers] = useState([{id:1,email:"jovan@example.com",role:"Owner"},{id:2,email:"vukasin@example.com",role:"Viewer"}]);
+    const [users, setUsers] = useState([]);
+
+    const fetchData = () => {
+        axios.get(environment + `/board/${boardId}/privileges`).then(res => {
+            if (res.status === 200) {
+                setUsers(res.data);
+            }
+        }).catch((error) => {
+            console.log(error)
+        });
+
+    }
+
+    useEffect(() => {
+        fetchData()
+    }, [])
 
     const handleChangeRole = (e) => {
         setNewRole(e.target.value as string);
@@ -25,6 +42,21 @@ export const ShareDialog=({open,setIsOpen})=>{
         pb: 3,
     };
 
+    const handleShare = () => {
+        axios.post(environment + `/boards/share`, {
+            board_id: boardId,
+            email: newEmail,
+            role: newRole
+        }).then(res => {
+            if (res.status === 200) {
+                console.log(res.data)
+                fetchData()
+            }
+        }).catch((error) => {
+            console.log(error)
+
+        });
+    }
 
     return <Modal
         open={open}
@@ -58,13 +90,13 @@ export const ShareDialog=({open,setIsOpen})=>{
                     </Select>
                 </FormControl>
 
-                <IconButton style={{width: "50px", height: "50px"}}>
+                <IconButton onClick={handleShare} style={{width: "50px", height: "50px"}}>
                     <Add fontSize="small"/>
                 </IconButton>
             </Box>
             <List style={{maxHeight: '200px', overflow: 'auto'}}>
                 {users.map((user)=>
-                    <UserListItem key={user.id} role={user.role} email={user.email} id={user.id}/>
+                    <UserListItem key={user.id} role={user.role} email={user.email} id={user.id} fetch={fetchData} boardId={boardId}/>
                 )}
             </List>
         </Box>

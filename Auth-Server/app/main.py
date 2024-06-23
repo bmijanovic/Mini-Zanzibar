@@ -40,6 +40,12 @@ async def create_acl(acl_dto: ACL):
     return {"object": object, "relation": relation, "user": user}
 
 
+@app.delete("/acl")
+async def delete_acl(object: str = Query(...), user: str = Query(...)):
+    level_db_handler.delete(f"{object}@{user}")
+    return {"object": object, "user": user}
+
+
 @app.get("/acl/check")
 async def check_acl(object: str = Query(...), relation: str = Query(...), user: str = Query(...)):
     role = level_db_handler.get(f"{object}@{user}")

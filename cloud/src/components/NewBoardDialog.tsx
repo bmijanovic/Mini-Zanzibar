@@ -16,15 +16,16 @@ import {useState} from "react";
 import axios from "axios";
 
 
-export const NewBoardDialog=({open,setIsOpen})=>{
+export const NewBoardDialog=({open,setIsOpen,getBoards})=>{
     const [newName, setNewName] = useState('');
 
 
     const createBoard=()=>{
-        axios.post(`http://localhost:8001/boards/create`,{name:newName})
+        axios.post(`http://localhost:8001/boards/create`,{name:newName, content:{}})
             .then(res => {
                 setNewName("");
                 setIsOpen(false);
+                getBoards();
             })
     }
     const style = {
