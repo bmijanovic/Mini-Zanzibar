@@ -35,4 +35,11 @@ class Board(Base):
     owner = relationship("User", back_populates="boards")
 
 
+class Relation(Base):
+    __tablename__ = 'relations'
+    user_id = Column(Integer, primary_key=True, index=True)
+    board_id = Column(Integer, index=True)
+    privilege = Column(String, index=True)
+
+
 Base.metadata.create_all(bind=engine)
