@@ -10,8 +10,7 @@ import {
     ExportFileContentSubMenu,
     ViewSubmenu
 } from 'tldraw'
-import 'tldraw/tldraw.css'
-import _jsonSnapshot from '../temp.json'
+import 'tldraw/tldraw.css';
 import * as fs from "fs";
 import {useNavigate, useParams} from "react-router-dom";
 
