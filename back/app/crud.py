@@ -28,10 +28,11 @@ def create_user(db: Session, user: UserCreate):
 
 
 def create_board(db: Session, board: BoardCreate, user_id: int):
+    content='{"document": {"store": {"document:document": {"gridSize": 10, "name": "", "meta": {}, "id": "document:document", "typeName": "document"}, "page:page": {"meta": {}, "id": "page:page", "name": "Page 1", "index": "a1", "typeName": "page"}}, "schema": {"schemaVersion": 2, "sequences": {"com.tldraw.store": 4, "com.tldraw.asset": 1, "com.tldraw.camera": 1, "com.tldraw.document": 2, "com.tldraw.instance": 25, "com.tldraw.instance_page_state": 5, "com.tldraw.page": 1, "com.tldraw.instance_presence": 5, "com.tldraw.pointer": 1, "com.tldraw.shape": 4, "com.tldraw.asset.bookmark": 2, "com.tldraw.asset.image": 3, "com.tldraw.asset.video": 3, "com.tldraw.shape.group": 0, "com.tldraw.shape.text": 2, "com.tldraw.shape.bookmark": 2, "com.tldraw.shape.draw": 1, "com.tldraw.shape.geo": 8, "com.tldraw.shape.note": 6, "com.tldraw.shape.line": 4, "com.tldraw.shape.frame": 0, "com.tldraw.shape.arrow": 4, "com.tldraw.shape.highlight": 0, "com.tldraw.shape.embed": 4, "com.tldraw.shape.image": 3, "com.tldraw.shape.video": 2, "com.tldraw.binding.arrow": 0}}}, "session": {"version": 0, "currentPageId": "page:page", "exportBackground": true, "isFocusMode": false, "isDebugMode": true, "isToolLocked": false, "isGridMode": false, "pageStates": [{"pageId": "page:page", "camera": {"x": 0, "y": 0, "z": 1}, "selectedShapeIds": [], "focusedGroupId": null}]}}'
     db_board = Board(
         name=board.name,
         owner_id=user_id,
-        content=board.content
+        content=json.loads(content)
     )
     db.add(db_board)
     db.commit()

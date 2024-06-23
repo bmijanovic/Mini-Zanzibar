@@ -13,13 +13,19 @@ import {
 import {Add} from "@mui/icons-material";
 import {UserListItem} from "./UserListItem";
 import {useState} from "react";
+import axios from "axios";
 
 
 export const NewBoardDialog=({open,setIsOpen})=>{
     const [newName, setNewName] = useState('');
 
-    const handleChangeRole = (e) => {
-        setNewName(e.target.value as string);
+
+    const createBoard=()=>{
+        axios.post(`http://localhost:8001/boards/create`,{name:newName})
+            .then(res => {
+                setNewName("");
+                setIsOpen(false);
+            })
     }
     const style = {
         position: 'absolute' as 'absolute',
@@ -54,7 +60,8 @@ export const NewBoardDialog=({open,setIsOpen})=>{
                         setNewName(event.target.value);
                     }}
                 />
-                <Button sx={{padding:"10px",bgcolor:"blue",color:"white",'&:hover':{backgroundColor:"darkBlue"} ,fontSize:"15px",fontWeight:"600",width:"200px",mt:4,}} >Create table</Button>
+                <Button sx={{padding:"10px",bgcolor:"blue",color:"white",'&:hover':{backgroundColor:"darkBlue"} ,fontSize:"15px",fontWeight:"600",width:"200px",mt:4,}}
+                onClick={()=>createBoard()}>Create table</Button>
             </Box>
 
         </Box>
