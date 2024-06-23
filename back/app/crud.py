@@ -1,3 +1,5 @@
+import json
+
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
@@ -34,6 +36,18 @@ def create_board(db: Session, board: BoardCreate, user_id: int):
     db.add(db_board)
     db.commit()
     db.refresh(db_board)
+    return db_board
+
+
+def update_board_content(db: Session, board_id: int, new_content: str):
+    db_board = db.query(Board).filter(Board.id == board_id).first()
+
+    if not db_board:
+        return False
+    db_board.content = json.loads(new_content)
+    db.commit()
+    db.refresh(db_board)
+
     return db_board
 
 

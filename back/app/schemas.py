@@ -28,6 +28,10 @@ class BoardCreate(BaseModel):
     name: str
     content: Optional[dict]
 
+class BoardContentUpdate(BaseModel):
+    board_content: str
+    board_id: int
+
 
 class BoardResponse(BaseModel):
     id: int
