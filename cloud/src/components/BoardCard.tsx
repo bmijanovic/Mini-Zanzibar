@@ -13,7 +13,7 @@ import {ShareDialog} from "./ShareDialog";
 import {DeleteDialog} from "./DeleteDialog";
 
 
-export default function BoardCard({propBoard}) {
+export default function BoardCard({propBoard, fetchData}) {
     const [openShareDialog,setIsOpenShareDialog]=useState(false);
     const [openDeleteDialog,setIsOpenDeleteDialog]=useState(false);
     const [board] = useState(propBoard);
@@ -62,6 +62,6 @@ export default function BoardCard({propBoard}) {
         </CardActions>
     </Card>
         <ShareDialog open={openShareDialog} setIsOpen={setIsOpenShareDialog} boardId={board.id}/>
-        <DeleteDialog open={openDeleteDialog} setIsOpen={setIsOpenDeleteDialog}/>
+        <DeleteDialog open={openDeleteDialog} setIsOpen={setIsOpenDeleteDialog} boardId={board.id} fetchData={fetchData}/>
     </>
 }

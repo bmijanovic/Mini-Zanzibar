@@ -75,7 +75,7 @@ export default function Boards(){
                     <Grid container spacing={2}>
                         { myBoards.map((board)=>
                         <Grid key={board.id} item xs={4}>
-                            <BoardCard propBoard={board}/>
+                            <BoardCard propBoard={board} fetchData={fetchData}/>
                         </Grid>
                         )}
                     </Grid>
@@ -84,7 +84,7 @@ export default function Boards(){
                     <Grid container spacing={2}>
                         { sharedBoards.map((board)=>
                             <Grid key={board.id} item xs={4}>
-                                <BoardCard propBoard={board} />
+                                <BoardCard propBoard={board} fetchData={fetchData}/>
                             </Grid>
                         )}
                     </Grid>

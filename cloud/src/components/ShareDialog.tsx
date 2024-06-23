@@ -11,8 +11,7 @@ export const ShareDialog=({open,setIsOpen,boardId})=>{
     const [newRole, setNewRole] = useState('Viewer');
     const [users, setUsers] = useState([]);
 
-
-    useEffect(() => {
+    const fetchData = () => {
         axios.get(environment + `/board/${boardId}/privileges`).then(res => {
             if (res.status === 200) {
                 setUsers(res.data);
@@ -20,6 +19,11 @@ export const ShareDialog=({open,setIsOpen,boardId})=>{
         }).catch((error) => {
             console.log(error)
         });
+
+    }
+
+    useEffect(() => {
+        fetchData()
     }, [])
 
     const handleChangeRole = (e) => {
@@ -46,6 +50,7 @@ export const ShareDialog=({open,setIsOpen,boardId})=>{
         }).then(res => {
             if (res.status === 200) {
                 console.log(res.data)
+                fetchData()
             }
         }).catch((error) => {
             console.log(error)
@@ -91,7 +96,7 @@ export const ShareDialog=({open,setIsOpen,boardId})=>{
             </Box>
             <List style={{maxHeight: '200px', overflow: 'auto'}}>
                 {users.map((user)=>
-                    <UserListItem key={user.id} role={user.role} email={user.email} id={user.id}/>
+                    <UserListItem key={user.id} role={user.role} email={user.email} id={user.id} fetch={fetchData} boardId={boardId}/>
                 )}
             </List>
         </Box>

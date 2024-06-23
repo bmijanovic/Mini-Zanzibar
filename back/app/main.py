@@ -199,7 +199,9 @@ def share_board(request: Request, share_dto: ShareDTO, db: Session = Depends(get
 
 
 @app.post("/boards/unshare")
-def unshare_board(request: Request, board_id: int, email: str, db: Session = Depends(get_db)):
+def unshare_board(request: Request, share_dto: ShareDTO, db: Session = Depends(get_db)):
+    board_id = share_dto.board_id
+    email = share_dto.email
     user_email = request.session.get("user_email")
     if user_email is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -213,6 +215,8 @@ def unshare_board(request: Request, board_id: int, email: str, db: Session = Dep
         raise HTTPException(status_code=404, detail="Board not found")
 
     check_acl_req = check_acl(f"board:{board.name}", "owner", user_email)
+    print(check_acl_req.json())
+    print(user_email)
     if check_acl_req.status_code != 200:
         raise HTTPException(status_code=404, detail="ACL check failed")
 
