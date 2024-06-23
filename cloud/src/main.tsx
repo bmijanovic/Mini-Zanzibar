@@ -6,6 +6,9 @@ import {createTheme, ThemeProvider} from "@mui/material";
 import axios from "axios";
 import SingleBoard from "./pages/SingleBoard";
 import Boards from "./pages/Boards";
+import {AuthProvider} from "./utils/AuthContext";
+import {UnauthenticatedRoute} from "./pages/UnauthenticatedRoute";
+import {AuthenticatedRoute} from "./pages/AuthenticatedRoute";
 
 axios.defaults.withCredentials = true
 
@@ -22,9 +25,9 @@ const theme = createTheme({
 });
 
 const router = createBrowserRouter([
-    {path:"/login", element:<Login/>},
-    {path:"/board/:id", element:<SingleBoard/>},
-    {path:"/boards", element:<Boards/>},
+    {path:"/login", element:<UnauthenticatedRoute><Login/></UnauthenticatedRoute>},
+    {path:"/board/:id", element:<AuthenticatedRoute><SingleBoard/></AuthenticatedRoute>},
+    {path:"/boards", element:<AuthenticatedRoute><Boards/></AuthenticatedRoute>},
     {path:"*", element: <Navigate to="/boards" replace />},
 ])
 
@@ -32,7 +35,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     //<React.StrictMode>
     <ThemeProvider theme={theme} >
+        <AuthProvider>
             <RouterProvider router={router}/>
+        </AuthProvider>
     </ThemeProvider>
     //</React.StrictMode>,
 )

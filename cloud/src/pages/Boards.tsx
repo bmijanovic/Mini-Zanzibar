@@ -24,7 +24,7 @@ export default function Boards(){
         event.preventDefault()
         axios.post(environment + `/users/logout`).then(res => {
             if (res.status === 200) {
-                navigate("/login")
+                navigate(0)
             }
         }).catch((error) => {
             console.log(error)
