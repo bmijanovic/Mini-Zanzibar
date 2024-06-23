@@ -42,6 +42,16 @@ class BoardResponse(BaseModel):
 
     class Config:
         orm_mode = True
+class SingleBoardResponse(BaseModel):
+    id: int
+    name: str
+    owner_id: int
+    content: dict
+    privilege: str
+
+    class Config:
+        orm_mode = True
+
 
 
 class BoardForUserResponse(BaseModel):

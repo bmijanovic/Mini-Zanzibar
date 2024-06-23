@@ -16,7 +16,7 @@ import {useState} from "react";
 import axios from "axios";
 
 
-export const NewBoardDialog=({open,setIsOpen})=>{
+export const NewBoardDialog=({open,setIsOpen,getBoards})=>{
     const [newName, setNewName] = useState('');
 
 
@@ -25,6 +25,7 @@ export const NewBoardDialog=({open,setIsOpen})=>{
             .then(res => {
                 setNewName("");
                 setIsOpen(false);
+                getBoards();
             })
     }
     const style = {

@@ -73,12 +73,6 @@ def update_board(board_dto: BoardContentUpdate, request: Request, db: Session = 
     return crud.update_board_content(db, board_dto.board_id, board_dto.board_content)
 
 
-@app.get("/boa rds/{board_id}", response_model=BoardResponse)
-def read_board(board_id: int, db: Session = Depends(get_db)):
-    board = crud.get_board(db, board_id)
-    return board
-
-
 @app.get("/boards", response_model=AllBoardsResponse)
 def read_boards(request: Request, db: Session = Depends(get_db)):
     user_email = request.session.get("user_email")
@@ -113,12 +107,35 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
     return user
 
 
-@app.get("/boards/{board_id}", response_model=BoardResponse)
-def read_board(board_id: int, db: Session = Depends(get_db)):
+@app.get("/boards/{board_id}", response_model=SingleBoardResponse)
+def read_board(board_id: int, request: Request, db: Session = Depends(get_db)):
+    user_email = request.session.get("user_email")
+    if user_email is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user = crud.find_user_by_email(db, user_email)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
     board = crud.get_board(db, board_id)
     if board is None:
         raise HTTPException(status_code=404, detail="Board not found")
-    return board
+    privilege = 'editor'
+    check_acl_req = check_acl(f"board:{board.name}", "editor", user_email)
+    if check_acl_req.status_code != 200:
+        raise HTTPException(status_code=404, detail="ACL check failed")
+    if not check_acl_req.json().get("authorized"):
+        check_acl_req = check_acl(f"board:{board.name}", "viewer", user_email)
+        if check_acl_req.status_code != 200:
+            raise HTTPException(status_code=404, detail="ACL check failed")
+        if not check_acl_req.json().get("authorized"):
+            raise HTTPException(status_code=404, detail="ACL permission denied")
+        privilege = 'viewer'
+    board_response = SingleBoardResponse(id=board.id,
+                                   name=board.name,
+                                   owner_id=board.owner_id,
+                                   content=board.content,
+                                   privilege="viewer")
+    return board_response
 
 
 @app.post("/users/login")

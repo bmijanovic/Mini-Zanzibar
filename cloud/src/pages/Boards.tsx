@@ -19,7 +19,7 @@ export default function Boards(){
         setTabValue(newValue);
     };
 
-    useEffect(() => {
+    const fetchData=()=>{
         axios.get(environment + `/boards`).then(res => {
             if (res.status === 200) {
                 let myBoards = res.data.my_boards;
@@ -32,6 +32,10 @@ export default function Boards(){
             console.log(error)
             setError("An error occurred!");
         });
+    }
+
+    useEffect(() => {
+        fetchData()
     }, [])
 
     function submitHandler(event: any) {
@@ -47,7 +51,7 @@ export default function Boards(){
     }
 
     return <Box>
-        <NewBoardDialog open={isOpenDialog} setIsOpen={setIsOpenDialog}/>
+        <NewBoardDialog open={isOpenDialog} setIsOpen={setIsOpenDialog} getBoards={fetchData}/>
         <Fab size="small" sx={{position:"fixed",right:10,top:10, backgroundColor:"gray"}} aria-label="add">
             <Logout onClick={submitHandler}/>
         </Fab>
@@ -80,7 +84,7 @@ export default function Boards(){
                     <Grid container spacing={2}>
                         { sharedBoards.map((board)=>
                             <Grid key={board.id} item xs={4}>
-                                <BoardCard propBoard={board}/>
+                                <BoardCard propBoard={board} />
                             </Grid>
                         )}
                     </Grid>
