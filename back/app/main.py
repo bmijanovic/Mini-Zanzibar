@@ -47,7 +47,7 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup():
     await database.connect()
-    insert_initial_data()
+    # insert_initial_data()
 
 
 @app.on_event("shutdown")

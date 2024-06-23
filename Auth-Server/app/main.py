@@ -1,3 +1,4 @@
+import base64
 import os
 from dotenv import load_dotenv
 from fastapi import FastAPI, Query, Body
@@ -7,7 +8,6 @@ from app.models import ACL
 from app.consul_db_handler import ConsulDBHandler
 from app.level_db_handler import LevelDBHandler
 from app.role_parser import *
-
 
 load_dotenv()
 LEVELDB_PATH = os.getenv("ACL_LEVELDB_PATH")
@@ -19,7 +19,7 @@ level_db_handler = LevelDBHandler(LEVELDB_PATH)
 consul_db_handler = ConsulDBHandler(CONSUL_DB_HOST, CONSUL_DB_PORT)
 
 origins = [
-
+    "http://consul:8500/",
     "http://client_back:8001/",
 ]
 
@@ -30,6 +30,7 @@ app.add_middleware(
     allow_methods=[""],
     allow_headers=[""],
 )
+
 
 @app.post("/acl")
 async def create_acl(acl_dto: ACL):
@@ -43,17 +44,27 @@ async def create_acl(acl_dto: ACL):
 @app.get("/acl/check")
 async def check_acl(object: str = Query(...), relation: str = Query(...), user: str = Query(...)):
     role = level_db_handler.get(f"{object}@{user}")
-    print("Role:", role)
     if role is None:
         return {"authorized": False}
     namespace = await consul_db_handler.get_config()
     privileges = get_privileges(relation, namespace['relations'])
-    print("Privileges:", privileges)
     return {"authorized": role in privileges}
 
 
 @app.post("/namespace")
 async def create_namespace(namespace=Body(...)):
     await consul_db_handler.create_new_config(namespace)
-    print(get_all_roles_with_privileges(await consul_db_handler.get_config()))
+    return "Success"
+
+
+@app.post("/consul_watch_handler")
+async def consul_watch_handler(body=Body(...)):
+    decoded_version = base64.b64decode(body['Value']).decode('utf-8')
+    await consul_db_handler.change_config_to_version(decoded_version.replace('"', ""))
+    return "Success"
+
+
+# testing
+@app.get("/namespace")
+async def get_namespace():
     return await consul_db_handler.get_config()
