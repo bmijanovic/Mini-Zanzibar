@@ -38,7 +38,7 @@ class Board(Base):
 class Relation(Base):
     __tablename__ = 'relations'
     user_id = Column(Integer, primary_key=True, index=True)
-    board_id = Column(Integer, index=True)
+    board_id = Column(Integer, primary_key=True ,index=True)
     privilege = Column(String, index=True)
 
 

@@ -61,3 +61,9 @@ class AllBoardsResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class ShareDTO(BaseModel):
+    email: str
+    board_id: int
+    role: str

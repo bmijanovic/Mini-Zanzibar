@@ -61,7 +61,11 @@ def update_board(board_dto: BoardContentUpdate, request: Request, db: Session = 
     user_email = request.session.get("user_email")
     if user_email is None:
         raise HTTPException(status_code=404, detail="User not found")
-    check_acl_req = check_acl(f"board:{board_dto.board_id}", "editor", user_email)
+    board = crud.get_board(db, board_dto.board_id)
+    if board is None:
+        raise HTTPException(status_code=404, detail="Board not found")
+
+    check_acl_req = check_acl(f"board:{board.name}", "editor", user_email)
     if check_acl_req.status_code != 200:
         raise HTTPException(status_code=404, detail="ACL check failed")
     if not check_acl_req.json().get("authorized"):
@@ -141,7 +145,10 @@ def whoami(request: Request):
 
 
 @app.post("/boards/share")
-def share_board(request: Request, board_id: int, email: str, role: str, db: Session = Depends(get_db)):
+def share_board(request: Request, share_dto: ShareDTO, db: Session = Depends(get_db)):
+    board_id = share_dto.board_id
+    email = share_dto.email
+    role = share_dto.role.lower()
     user_email = request.session.get("user_email")
     if user_email is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -209,6 +216,7 @@ def unshare_board(request: Request, board_id: int, email: str, db: Session = Dep
 @app.post("/boards/create", response_model=BoardResponse)
 def create_board(board: BoardCreate, request: Request, db: Session = Depends(get_db)):
     user_email = request.session.get("user_email")
+    print("User email:", user_email)
     if user_email is None:
         raise HTTPException(status_code=404, detail="User not found")
     user = crud.find_user_by_email(db, user_email)
