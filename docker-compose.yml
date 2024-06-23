@@ -44,6 +44,8 @@ services:
       - ./back/.env:/back/.env
     depends_on:
       - consul
+      - database
+      - server
 
   database:
     image: postgres:13
@@ -56,6 +58,7 @@ services:
       - "5432:5432"
     networks:
       - server_network
+  
 
 networks:
   server_network:

@@ -49,5 +49,6 @@ def find_user_by_email_and_password(db: Session, email: str, password: str):
         return False
     return user
 
+
 def get_board(db: Session, board_id: int):
     return db.query(Board).filter(Board.id == board_id).first()
