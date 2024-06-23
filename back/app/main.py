@@ -62,7 +62,7 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
 
 
 @app.put("/boards", response_model=BoardResponse)
-def create_board(board_dto:BoardContentUpdate, db: Session = Depends(get_db)):
+def update_board(board_dto:BoardContentUpdate, db: Session = Depends(get_db)):
     return crud.update_board_content(db, board_dto.board_id,board_dto.board_content)
 
 @app.get("/boards/{board_id}", response_model=BoardResponse)

@@ -10,8 +10,7 @@ import {
     ExportFileContentSubMenu,
     ViewSubmenu
 } from 'tldraw'
-import 'tldraw/tldraw.css'
-import * as fs from "fs";
+import 'tldraw/tldraw.css';
 import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import axios from "axios";
