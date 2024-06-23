@@ -11,17 +11,33 @@ import {
     ViewSubmenu
 } from 'tldraw'
 import 'tldraw/tldraw.css'
-import _jsonSnapshot from '../temp.json'
 import * as fs from "fs";
 import {useNavigate, useParams} from "react-router-dom";
+import {useEffect, useState} from "react";
+import axios from "axios";
 
-// There's a guide at the bottom of this file!
-
-const jsonSnapshot = _jsonSnapshot as any as TLEditorSnapshot
 
 
 export default function Board() {
     const { id } = useParams();
+    const [board,setBoard] = useState(null);
+
+    useEffect(()=>{
+        axios.get(`http://localhost:8001/boards/${id}`)
+            .then(res => {
+                res=res.data;
+                setBoard(res);
+            })
+    },[])
+
+    const saveBoard=(editor)=>{
+        const { document, session } = getSnapshot(editor.store)
+        const jsonString = JSON.stringify({document,session});
+
+        axios.put(`http://localhost:8001/boards`,{board_content:jsonString,board_id:id})
+            .then(res => {
+            })
+    }
 
     function CustomMainMenu() {
 
@@ -35,14 +51,7 @@ export default function Board() {
                             label="Save"
                             icon="external-link"
                             readonlyOk
-                            onSelect={() => {
-                                const { document, session } = getSnapshot(editor.store)
-                                const jsonString = JSON.stringify({document,session});
-
-                                const filePath = '../temp.json';
-
-
-                            }}
+                            onSelect={() => saveBoard(editor)}
                         />
                         <ExportFileContentSubMenu/>
                         <ViewSubmenu/>
@@ -57,13 +66,14 @@ export default function Board() {
     }
     return (
         <div style={{ position: 'fixed', inset: 0 }} className="tldraw__editor">
+            { board!=null &&
             <Tldraw
                 onMount={(editor) => {
                     editor.updateInstanceState({ isReadonly: false })
                 }}
-                snapshot={jsonSnapshot}
+                snapshot={board.content as any as TLEditorSnapshot}
                 components={components}
-            />
+            />}
 
         </div>
     )
