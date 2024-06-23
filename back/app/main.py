@@ -31,7 +31,6 @@ app.add_middleware(
     SessionMiddleware, secret_key=SECRET_KEY
 )
 origins = [
-
     "http://localhost:5173",
 ]
 
@@ -47,7 +46,7 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup():
     await database.connect()
-    insert_initial_data()
+    # insert_initial_data()
 
 
 @app.on_event("shutdown")
@@ -96,6 +95,11 @@ def login(dto: UserLogin, request: Request, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     request.session["user_email"] = user.email
     return user
+
+@app.post("/users/logout")
+def logout(request: Request):
+    request.session.pop("user_email", None)
+    return {"message": "Logged out"}
 
 
 @app.get("/whoami")
