@@ -69,7 +69,7 @@ def update_board(board_dto: BoardContentUpdate, request: Request, db: Session = 
     return crud.update_board_content(db, board_dto.board_id, board_dto.board_content)
 
 
-@app.get("/boards/{board_id}", response_model=BoardResponse)
+@app.get("/boa rds/{board_id}", response_model=BoardResponse)
 def read_board(board_id: int, db: Session = Depends(get_db)):
     board = crud.get_board(db, board_id)
     return board

@@ -18,7 +18,7 @@ export default function LoginForm() {
             password: password
         }).then(res => {
             if (res.status === 200) {
-                navigate("/boards")
+                navigate(0)
             }
         }).catch((error) => {
             console.log(error)
