@@ -4,20 +4,38 @@ import BoardCard from "../components/BoardCard";
 import {useState} from 'react'
 import {Add, Logout} from "@mui/icons-material";
 import {NewBoardDialog} from "../components/NewBoardDialog";
+import {useNavigate} from "react-router-dom";
+import axios from "axios";
+import {environment} from "../utils/Enviroment";
 
 export default function Boards(){
     const [tabValue, setTabValue] = useState('1');
     const [isOpenDialog,setIsOpenDialog]=useState(false);
     const [myBoards, setMyBoards] = useState([{id:3,name:"Board 1",owner:"Vukasin",role:"Owner","isOwner":true},{id:4,name:"Board 1",role:"Owner",owner:"Vukasin","isOwner":true}]);
     const [sharedBoards, setSharedBoards] = useState([{id:1,name:"Board 12",owner:"Vukasin",role:"View Only","isOwner":false},{id:2,name:"Board 12",role:"View Only",owner:"Vukasin","isOwner":false}]);
+    const [error, setError] = useState("")
+    const navigate = useNavigate()
 
     const handleChange = (event: React.SyntheticEvent, newValue: string) => {
         setTabValue(newValue);
     };
+
+    function submitHandler(event: any) {
+        event.preventDefault()
+        axios.post(environment + `/users/logout`).then(res => {
+            if (res.status === 200) {
+                navigate("/login")
+            }
+        }).catch((error) => {
+            console.log(error)
+            setError("An error occurred!");
+        });
+    }
+
     return <Box>
         <NewBoardDialog open={isOpenDialog} setIsOpen={setIsOpenDialog}/>
         <Fab size="small" sx={{position:"fixed",right:10,top:10, backgroundColor:"gray"}} aria-label="add">
-            <Logout/>
+            <Logout onClick={submitHandler}/>
         </Fab>
         <Fab size="small" variant='extended' sx={{position:"fixed",right:40,bottom:40, backgroundColor:"blue", '&:hover': {
                 backgroundColor: "darkblue"

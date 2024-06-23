@@ -13,12 +13,12 @@ export default function LoginForm() {
 
     function submitHandler(event: any) {
         event.preventDefault()
-        axios.post(environment + `/api/User/login`, {
+        axios.post(environment + `/users/login`, {
             email: email,
             password: password
         }).then(res => {
             if (res.status === 200) {
-                navigate(0);
+                navigate("/boards")
             }
         }).catch((error) => {
             console.log(error)
