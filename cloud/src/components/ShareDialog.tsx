@@ -1,7 +1,7 @@
 import {Box, FormControl, IconButton, InputLabel, List, MenuItem, Modal, Select, TextField} from "@mui/material";
 import {Add} from "@mui/icons-material";
 import {UserListItem} from "./UserListItem";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import axios from "axios";
 import {environment} from "../utils/Enviroment.tsx";
 
@@ -9,7 +9,18 @@ import {environment} from "../utils/Enviroment.tsx";
 export const ShareDialog=({open,setIsOpen,boardId})=>{
     const [newEmail, setNewEmail] = useState('');
     const [newRole, setNewRole] = useState('Viewer');
-    const [users, setUsers] = useState([{id:1,email:"jovan@example.com",role:"Owner"},{id:2,email:"vukasin@example.com",role:"Viewer"}]);
+    const [users, setUsers] = useState([]);
+
+
+    useEffect(() => {
+        axios.get(environment + `/board/${boardId}/privileges`).then(res => {
+            if (res.status === 200) {
+                setUsers(res.data);
+            }
+        }).catch((error) => {
+            console.log(error)
+        });
+    }, [])
 
     const handleChangeRole = (e) => {
         setNewRole(e.target.value as string);

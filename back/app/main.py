@@ -131,10 +131,10 @@ def read_board(board_id: int, request: Request, db: Session = Depends(get_db)):
             raise HTTPException(status_code=404, detail="ACL permission denied")
         privilege = 'viewer'
     board_response = SingleBoardResponse(id=board.id,
-                                   name=board.name,
-                                   owner_id=board.owner_id,
-                                   content=board.content,
-                                   privilege="viewer")
+                                         name=board.name,
+                                         owner_id=board.owner_id,
+                                         content=board.content,
+                                         privilege=privilege)
     return board_response
 
 
@@ -244,3 +244,34 @@ def create_board(board: BoardCreate, request: Request, db: Session = Depends(get
         raise HTTPException(status_code=404, detail="ACL not created")
     crud.create_permissions(db, user.id, board.id, "owner")
     return board
+
+
+@app.get("/board/{board_id}/privileges")
+def get_privileges(board_id: int, db: Session = Depends(get_db)):
+    relations = crud.get_all_relations_for_board(db, board_id)
+    return [{"email": crud.get_user(db, relation.user_id).email, "role": relation.privilege, "id": relation.user_id}
+            for relation in relations if relation.privilege != "owner"]
+
+
+@app.delete("/boards/{board_id}")
+def delete_board(board_id: int, request: Request, db: Session = Depends(get_db)):
+    user_email = request.session.get("user_email")
+    if user_email is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    user = crud.find_user_by_email(db, user_email)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    board = crud.get_board(db, board_id)
+    if board is None:
+        raise HTTPException(status_code=404, detail="Board not found")
+    check_acl_req = check_acl(f"board:{board.name}", "owner", user_email)
+    if check_acl_req.status_code != 200:
+        raise HTTPException(status_code=404, detail="ACL check failed")
+    if not check_acl_req.json().get("authorized"):
+        raise HTTPException(status_code=404, detail="Not authorized to delete")
+    relations = crud.get_all_relations_for_board(db, board_id)
+    for relation in relations:
+        delete_acl(f"board:{board.name}", crud.get_user(db, relation.user_id).email)
+    crud.delete_all_relations(db, board_id)
+    crud.delete_board(db, board_id)
+    return {"message": "Board deleted"}

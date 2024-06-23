@@ -96,3 +96,19 @@ def get_permissions(db, user_id, board_id):
 
 def get_all_relations(db, user_id):
     return db.query(Relation).filter(Relation.user_id == user_id).all()
+
+
+def get_all_relations_for_board(db, board_id):
+    return db.query(Relation).filter(Relation.board_id == board_id).all()
+
+
+def delete_all_relations(db, board_id):
+    relations = db.query(Relation).filter(Relation.board_id == board_id).all()
+    for relation in relations:
+        db.delete(relation)
+    db.commit()
+
+
+def delete_board(db, board_id):
+    db.query(Board).filter(Board.id == board_id).delete()
+    db.commit()

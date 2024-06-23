@@ -42,6 +42,8 @@ class BoardResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+
 class SingleBoardResponse(BaseModel):
     id: int
     name: str
@@ -51,7 +53,6 @@ class SingleBoardResponse(BaseModel):
 
     class Config:
         orm_mode = True
-
 
 
 class BoardForUserResponse(BaseModel):
