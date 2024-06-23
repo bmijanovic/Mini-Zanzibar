@@ -1,5 +1,12 @@
 import os
 import requests
+from fastapi import FastAPI, HTTPException, Depends
+from sqlalchemy.orm import Session
+from starlette.middleware.cors import CORSMiddleware
+
+from app.database import engine, database, get_db
+from app.models import Base
+from app.schemas import UserCreate, UserResponse, BoardCreate, BoardResponse, UserLogin, BoardContentUpdate
 import app.crud as crud
 from app.models import Base
 from dotenv import load_dotenv
@@ -23,11 +30,24 @@ app = FastAPI()
 app.add_middleware(
     SessionMiddleware, secret_key=SECRET_KEY
 )
+origins = [
+
+    "http://localhost:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.on_event("startup")
 async def startup():
     await database.connect()
-    # insert_initial_data()
+    insert_initial_data()
 
 
 @app.on_event("shutdown")
@@ -41,6 +61,15 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
 
 
 
+
+@app.put("/boards", response_model=BoardResponse)
+def create_board(board_dto:BoardContentUpdate, db: Session = Depends(get_db)):
+    return crud.update_board_content(db, board_dto.board_id,board_dto.board_content)
+
+@app.get("/boards/{board_id}", response_model=BoardResponse)
+def read_board(board_id: int, db: Session = Depends(get_db)):
+    board = crud.get_board(db, board_id)
+    return board
 
 
 @app.get("/users/{user_id}", response_model=UserResponse)
