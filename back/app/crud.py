@@ -25,10 +25,10 @@ def create_user(db: Session, user: UserCreate):
     return db_user
 
 
-def create_board(db: Session, board: BoardCreate):
+def create_board(db: Session, board: BoardCreate, user_id: int):
     db_board = Board(
         name=board.name,
-        owner_id=board.owner_id,
+        owner_id=user_id,
         content=board.content
     )
     db.add(db_board)
@@ -52,3 +52,7 @@ def find_user_by_email_and_password(db: Session, email: str, password: str):
 
 def get_board(db: Session, board_id: int):
     return db.query(Board).filter(Board.id == board_id).first()
+
+
+def find_user_by_email(db, user_email):
+    return db.query(User).filter(User.email == user_email).first()

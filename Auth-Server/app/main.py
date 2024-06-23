@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from fastapi import FastAPI, Query, Body
+from starlette.middleware.cors import CORSMiddleware
 
 from app.models import ACL
 from app.consul_db_handler import ConsulDBHandler
@@ -17,6 +18,18 @@ app = FastAPI()
 level_db_handler = LevelDBHandler(LEVELDB_PATH)
 consul_db_handler = ConsulDBHandler(CONSUL_DB_HOST, CONSUL_DB_PORT)
 
+origins = [
+
+    "http://client_back:8001/",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=[""],
+    allow_headers=[""],
+)
 
 @app.post("/acl")
 async def create_acl(acl_dto: ACL):
@@ -33,7 +46,7 @@ async def check_acl(object: str = Query(...), relation: str = Query(...), user: 
     print("Role:", role)
     if role is None:
         return {"authorized": False}
-    namespace = consul_db_handler.get_config()
+    namespace = await consul_db_handler.get_config()
     privileges = get_privileges(relation, namespace['relations'])
     print("Privileges:", privileges)
     return {"authorized": role in privileges}
@@ -42,5 +55,5 @@ async def check_acl(object: str = Query(...), relation: str = Query(...), user: 
 @app.post("/namespace")
 async def create_namespace(namespace=Body(...)):
     await consul_db_handler.create_new_config(namespace)
-    print(get_all_roles_with_privileges(consul_db_handler.get_config()))
+    print(get_all_roles_with_privileges(await consul_db_handler.get_config()))
     return await consul_db_handler.get_config()

@@ -26,7 +26,6 @@ class UserLogin(BaseModel):
 
 class BoardCreate(BaseModel):
     name: str
-    owner_id: int
     content: Optional[dict]
 
 

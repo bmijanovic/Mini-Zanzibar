@@ -1,16 +1,28 @@
-from fastapi import FastAPI, HTTPException, Depends
-from sqlalchemy.orm import Session
-
-from app.database import engine, database, get_db
-from app.models import Base
-from app.schemas import UserCreate, UserResponse, BoardCreate, BoardResponse, UserLogin
+import os
+import requests
 import app.crud as crud
+from app.models import Base
+from dotenv import load_dotenv
+from sqlalchemy.orm import Session
+from app.database import engine, database, get_db
 from app.insert_initial_data import insert_initial_data
+from starlette.middleware.sessions import SessionMiddleware
+from fastapi import FastAPI, HTTPException, Depends, Response, Request
+from app.schemas import UserCreate, UserResponse, BoardCreate, BoardResponse, UserLogin
 
+
+
+
+load_dotenv()
+SECRET_KEY = os.getenv("SECRET_KEY")
+MINI_ZANZIBAR_URL = os.getenv("MINI_ZANZIBAR_URL")
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+app.add_middleware(
+    SessionMiddleware, secret_key=SECRET_KEY
+)
 
 @app.on_event("startup")
 async def startup():
@@ -28,9 +40,7 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     return crud.create_user(db, user)
 
 
-@app.post("/boards/", response_model=BoardResponse)
-def create_board(board: BoardCreate, db: Session = Depends(get_db)):
-    return crud.create_board(db, board)
+
 
 
 @app.get("/users/{user_id}", response_model=UserResponse)
@@ -51,9 +61,35 @@ def read_board(board_id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/users/login")
-def login(dto: UserLogin, db: Session = Depends(get_db)):
-    print(dto)
+def login(dto: UserLogin, request: Request, db: Session = Depends(get_db)):
     user = crud.find_user_by_email_and_password(db, dto.email, dto.password)
     if user in [None, False]:
         raise HTTPException(status_code=404, detail="User not found")
+    request.session["user_email"] = user.email
     return user
+
+
+@app.get("/whoami")
+def whoami(request: Request):
+    email = request.session.get("user_email")
+    if email is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"email": email}
+
+
+@app.post("/boards/create", response_model=BoardResponse)
+def create_board(board: BoardCreate, request: Request, db: Session = Depends(get_db)):
+    user_email = request.session.get("user_email")
+    if user_email is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    user = crud.find_user_by_email(db, user_email)
+    board = crud.create_board(db, board, user.id)
+    print("Board:", board)
+    response = requests.post(MINI_ZANZIBAR_URL + "/acl", json={
+        "object": f"board:{board.name}",
+        "relation": "owner",
+        "user": user_email
+    })
+    if response.status_code != 200:
+        raise HTTPException(status_code=404, detail="ACL not created")
+    return board
