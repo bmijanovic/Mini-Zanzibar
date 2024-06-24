@@ -1,0 +1,17 @@
+[
+  {
+          "key": "current_version",
+          "flags": 0,
+          "value": "InYxIg=="
+  },
+  {
+          "key": "latest_version",
+          "flags": 0,
+          "value": "InYxIg=="
+  },
+  {
+          "key": "v1",
+          "flags": 0,
+          "value": "eyJuYW1lc3BhY2UiOiAiZG9jMTIxMSIsICJyZWxhdGlvbnMiOiB7Im93bmVyIjoge30sICJlZGl0b3IiOiB7InVuaW9uIjogW3sidGhpcyI6IHt9fSwgeyJjb21wdXRlZF91c2Vyc2V0IjogeyJyZWxhdGlvbiI6ICJvd25lciJ9fV19LCAidmlld2VyIjogeyJ1bmlvbiI6IFt7InRoaXMiOiB7fX0sIHsiY29tcHV0ZWRfdXNlcnNldCI6IHsicmVsYXRpb24iOiAiZWRpdG9yIn19XX19fQ=="
+  }
+]
