@@ -3,7 +3,6 @@ import json
 
 def get_privileges(role, relations):
     privileges = set()
-    print("Role:", role)
     if 'union' in relations[role]:
         for item in relations[role]['union']:
             if 'this' in item:
