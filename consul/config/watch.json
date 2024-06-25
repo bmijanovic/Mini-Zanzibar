@@ -1,8 +1,8 @@
 {
   "watches": [
     {
-      "type": "key",
-      "key": "current_version",
+      "type": "keyprefix",
+      "prefix": "current_version_",
       "handler_type": "http",
       "http_handler_config": {
         "path": "http://server:8000/namespace/consul_watch_handler",
@@ -11,7 +11,7 @@
         "headers": {
           "Content-Type": "application/json"
         },
-        "body": "{\"key\": \"current_version\", \"value\": {{ .Value }}}"
+        "body": "{\"key\": \".Key\", \"value\": {{ .Value }}}"
       }
     }
   ]
