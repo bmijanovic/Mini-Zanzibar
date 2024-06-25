@@ -5,7 +5,7 @@
       "key": "current_version",
       "handler_type": "http",
       "http_handler_config": {
-        "path": "http://server:8000/consul_watch_handler",
+        "path": "http://server:8000/namespace/consul_watch_handler",
         "method": "POST",
         "timeout": "10s",
         "headers": {

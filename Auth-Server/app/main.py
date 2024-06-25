@@ -70,7 +70,7 @@ async def get_current_config():
     return await consul_db_handler.get_config()
 
 
-@app.post("/change_version")
+@app.post("/namespace/change_version")
 async def change_version(version: str = Query(...)):
     pattern = re.compile(r"v\d", re.IGNORECASE)
     if not pattern.match(version):
@@ -82,7 +82,7 @@ async def change_version(version: str = Query(...)):
     return "Success"
 
 
-@app.post("/consul_watch_handler")
+@app.post("/namespace/consul_watch_handler")
 async def consul_watch_handler(body=Body(...)):
     decoded_version = base64.b64decode(body['Value']).decode('utf-8')
     await consul_db_handler.change_config_to_version(decoded_version.replace('"', ""))
