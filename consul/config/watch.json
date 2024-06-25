@@ -1,0 +1,18 @@
+{
+  "watches": [
+    {
+      "type": "key",
+      "key": "current_version",
+      "handler_type": "http",
+      "http_handler_config": {
+        "path": "http://server:8000/consul_watch_handler",
+        "method": "POST",
+        "timeout": "10s",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{\"key\": \"current_version\", \"value\": {{ .Value }}}"
+      }
+    }
+  ]
+}

@@ -1,7 +1,9 @@
 import base64
 import os
+import re
+
 from dotenv import load_dotenv
-from fastapi import FastAPI, Query, Body
+from fastapi import FastAPI, Query, Body, HTTPException
 from starlette.middleware.cors import CORSMiddleware
 
 from app.models import ACL
@@ -63,14 +65,25 @@ async def create_namespace(namespace=Body(...)):
     return "Success"
 
 
+@app.get("/namespace")
+async def get_current_config():
+    return await consul_db_handler.get_config()
+
+
+@app.post("/change_version")
+async def change_version(version: str = Query(...)):
+    pattern = re.compile(r"v\d", re.IGNORECASE)
+    if not pattern.match(version):
+        raise HTTPException(status_code=400, detail="Incorrect version format")
+
+    if not await consul_db_handler.change_config_to_version(version):
+        raise HTTPException(status_code=404, detail="Version not found")
+
+    return "Success"
+
+
 @app.post("/consul_watch_handler")
 async def consul_watch_handler(body=Body(...)):
     decoded_version = base64.b64decode(body['Value']).decode('utf-8')
     await consul_db_handler.change_config_to_version(decoded_version.replace('"', ""))
     return "Success"
-
-
-# testing
-@app.get("/namespace")
-async def get_namespace():
-    return await consul_db_handler.get_config()

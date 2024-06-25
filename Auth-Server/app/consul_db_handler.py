@@ -32,8 +32,9 @@ class ConsulDBHandler:
     async def change_config_to_version(self, version):
         found_config = await self.get(version)
         if found_config is None:
-            return
+            return False
         self.config = found_config
+        return True
 
     async def get_config(self):
         return self.config
