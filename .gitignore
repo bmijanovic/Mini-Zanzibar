@@ -689,3 +689,7 @@ FodyWeavers.xsd
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/pycharm+all,python,visualstudio,visualstudiocode,git
+
+consul/data/
+Auth-Server/app/leveldb_data/*
+Auth-Server/app/database/

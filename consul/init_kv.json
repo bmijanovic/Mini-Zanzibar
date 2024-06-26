@@ -1,0 +1,37 @@
+[
+        {
+                "key": "current_version_boards",
+                "flags": 0,
+                "value": "InYxIg=="
+        },
+        {
+                "key": "current_version_docs",
+                "flags": 0,
+                "value": "InYxIg=="
+        },
+        {
+                "key": "latest_version_boards",
+                "flags": 0,
+                "value": "InYxIg=="
+        },
+        {
+                "key": "latest_version_docs",
+                "flags": 0,
+                "value": "InYxIg=="
+        },
+        {
+                "key": "namespaces",
+                "flags": 0,
+                "value": "WyJib2FyZHMiLCAiZG9jcyJd"
+        },
+        {
+                "key": "v1_boards",
+                "flags": 0,
+                "value": "eyJuYW1lc3BhY2UiOiAiYm9hcmRzIiwgInJlbGF0aW9ucyI6IHsib3duZXIiOiB7fSwgImVkaXRvciI6IHsidW5pb24iOiBbeyJ0aGlzIjoge319LCB7ImNvbXB1dGVkX3VzZXJzZXQiOiB7InJlbGF0aW9uIjogIm93bmVyIn19XX0sICJ2aWV3ZXIiOiB7InVuaW9uIjogW3sidGhpcyI6IHt9fSwgeyJjb21wdXRlZF91c2Vyc2V0IjogeyJyZWxhdGlvbiI6ICJlZGl0b3IifX1dfX19"
+        },
+        {
+                "key": "v1_docs",
+                "flags": 0,
+                "value": "eyJuYW1lc3BhY2UiOiAiZG9jcyIsICJyZWxhdGlvbnMiOiB7Im93bmVyIjoge30sICJlZGl0b3IiOiB7InVuaW9uIjogW3sidGhpcyI6IHt9fSwgeyJjb21wdXRlZF91c2Vyc2V0IjogeyJyZWxhdGlvbiI6ICJvd25lciJ9fV19LCAidmlld2VyIjogeyJ1bmlvbiI6IFt7InRoaXMiOiB7fX0sIHsiY29tcHV0ZWRfdXNlcnNldCI6IHsicmVsYXRpb24iOiAiZWRpdG9yIn19XX19fQ=="
+        }
+]

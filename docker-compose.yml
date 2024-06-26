@@ -1,0 +1,66 @@
+version: '3'
+
+services:
+  consul:
+    image: consul:1.15.4
+    container_name: consul
+    ports:
+      - "8500:8500"
+      - "8600:8600/udp"
+    volumes:
+      - ./consul/data:/consul/data
+      - ./consul:/consul
+    command: sh -c "./consul/init.sh"
+    networks:
+      - server_network
+
+  server:
+    build:
+      context: ./Auth-Server
+      dockerfile: Dockerfile
+    container_name: fastapi_auth_server
+    networks:
+      - server_network
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./Auth-Server/app:/Auth-Server/app
+      - ./Auth-Server/requirements.txt:/Auth-Server/requirements.txt
+      - ./Auth-Server/.env:/Auth-Server/.env
+    depends_on:
+      - consul
+
+  client_back:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    container_name: fastapi_back_server
+    networks:
+      - server_network
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./back/app:/back/app
+      - ./back/requirements.txt:/back/requirements.txt
+      - ./back/.env:/back/.env
+    depends_on:
+      - consul
+      - database
+      - server
+
+  database:
+    image: postgres:13
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - server_network
+  
+
+networks:
+  server_network:
+    driver: bridge

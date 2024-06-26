@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pydantic
+leveldb
+plyvel
+python-dotenv
+aiohttp
+starlette
+py-consul
