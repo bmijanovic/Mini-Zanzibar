@@ -36,7 +36,7 @@
 
 ### V5 Validacija, sanitizacija i enkodiranje:
 
-- ASVS 5.1: Svi osjetljivi podaci su enkriptovani tokom prenosa i u mirovanju.
+- ASVS 5.1: Svi osetljivi podaci su enkriptovani tokom prenosa i u mirovanju.
 - ASVS 5.3: Čuvano minimalno potrebnih podataka i brisani nepotrebni podaci na siguran način.
 
 ### V6 Kriptografija:
@@ -47,5 +47,5 @@
 
 ### V7 Upravljanje greškama:
 
-- ASVS 7.4: Osigurano da se greške pravilno rukovode i da ne otkrivaju osjetljive informacije korisnicima.
+- ASVS 7.4: Osigurano da se greške pravilno rukovode i da ne otkrivaju osetljive informacije korisnicima.
 
