@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   consul:
     image: consul:1.15.4
@@ -30,24 +28,6 @@ services:
     depends_on:
       - consul
 
-  client_back:
-    build:
-      context: ./back
-      dockerfile: Dockerfile
-    container_name: fastapi_back_server
-    networks:
-      - server_network
-    ports:
-      - "8001:8001"
-    volumes:
-      - ./back/app:/back/app
-      - ./back/requirements.txt:/back/requirements.txt
-      - ./back/.env:/back/.env
-    depends_on:
-      - consul
-      - database
-      - server
-
   database:
     image: postgres:13
     container_name: postgres
@@ -59,7 +39,36 @@ services:
       - "5432:5432"
     networks:
       - server_network
+
+  client_back:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    container_name: fastapi_back_server
+    networks:
+      - server_network
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./back/app:/back/app
+      - ./back/requirements.txt:/back/requirements.txt
+      - ./back/.env:/back/.env
+    depends_on:
+      - consul
+      - server
+      - database
   
+  client_front:
+    build:
+      context: ./cloud
+      dockerfile: Dockerfile
+    container_name: react_frontend
+    networks:
+      - server_network
+    ports:
+      - "4173:4173"
+    depends_on:
+      - client_back
 
 networks:
   server_network:

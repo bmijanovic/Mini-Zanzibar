@@ -41,7 +41,7 @@ export default function BoardCard({propBoard, fetchData}) {
                     }
                     {board.privilege == "owner" &&
                         <IconButton aria-label="Delete" onClick={handleDeleteClick}>
-                            <Delete fontSize="small" color="red"/>
+                            <Delete fontSize="small"/>
                         </IconButton>
                     }
 

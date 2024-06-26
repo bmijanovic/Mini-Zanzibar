@@ -14,6 +14,7 @@ import {Add} from "@mui/icons-material";
 import {UserListItem} from "./UserListItem";
 import {useState} from "react";
 import axios from "axios";
+import {environment} from "../utils/Enviroment.tsx";
 
 
 export const NewBoardDialog=({open,setIsOpen,getBoards})=>{
@@ -21,7 +22,7 @@ export const NewBoardDialog=({open,setIsOpen,getBoards})=>{
 
 
     const createBoard=()=>{
-        axios.post(`http://localhost:8001/boards/create`,{name:newName, content:{}})
+        axios.post(environment + `/boards/create`,{name:newName, content:{}})
             .then(res => {
                 setNewName("");
                 setIsOpen(false);
@@ -49,7 +50,7 @@ export const NewBoardDialog=({open,setIsOpen,getBoards})=>{
         aria-describedby="parent-modal-description"
     >
         <Box sx={{...style, width: 400}}>
-            <h2 align="center" id="parent-modal-title">Add new board</h2>
+            <h2 style={{textAlign:"center"}} id="parent-modal-title">Add new board</h2>
             <Box display="flex" flexDirection={"column"} justifyContent="center" alignItems="center">
                 <TextField
                     id="new-board-name"

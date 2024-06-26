@@ -14,6 +14,7 @@ import 'tldraw/tldraw.css';
 import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import axios from "axios";
+import {environment} from "../utils/Enviroment.tsx";
 
 
 export default function Board() {
@@ -22,11 +23,11 @@ export default function Board() {
     const [isReadOnly, setIsReadOnly] = useState(true);
 
     useEffect(() => {
-        axios.get(`http://localhost:8001/boards/${id}`)
+        axios.get(environment + `/boards/${id}`)
             .then(res => {
                 res = res.data;
                 console.log(res)
-                setIsReadOnly(res.privilege === 'viewer')
+                setIsReadOnly(res["privilege"] === 'viewer')
                 setBoard(res);
             })
     }, [])
@@ -35,7 +36,7 @@ export default function Board() {
         const {document, session} = getSnapshot(editor.store)
         const jsonString = JSON.stringify({document, session});
 
-        axios.put(`http://localhost:8001/boards`, {board_content: jsonString, board_id: id})
+        axios.put(environment + `/boards`, {board_content: jsonString, board_id: id})
             .then(res => {
             })
     }

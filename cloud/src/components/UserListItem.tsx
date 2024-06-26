@@ -28,7 +28,7 @@ export const UserListItem = ({id, email, role, fetch, boardId}) => {
         <Box display="flex" flexDirection="row" alignItems="center">
             <Typography color="gray">{role}</Typography>
             <IconButton aria-label="Delete" onClick={handleClick}>
-                <Close fontSize="small" color="red"/>
+                <Close fontSize="small"/>
             </IconButton>
         </Box>
     </Box>

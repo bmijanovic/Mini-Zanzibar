@@ -1,0 +1,18 @@
+# Specify the base image
+FROM node:alpine
+# Set the working directory
+WORKDIR /app
+# Copy the package.json and package-lock.json files
+COPY package*.json ./
+# Install the dependencies
+RUN npm install
+# Install Vite globally
+RUN npm install -g vite
+# Copy the app files
+COPY . .
+# Build the app
+RUN vite build
+# Expose the port
+EXPOSE 4173
+# Run the app
+CMD ["vite", "preview", "--host", "0.0.0.0"]
