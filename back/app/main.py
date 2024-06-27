@@ -67,7 +67,7 @@ def update_board(board_dto: BoardContentUpdate, request: Request, db: Session = 
     if board is None:
         raise HTTPException(status_code=404, detail="Board not found")
 
-    check_acl_req = check_acl(f"board:{board.name}", "editor", user_email)
+    check_acl_req = check_acl(f"boards:{board.name}", "editor", user_email)
     if check_acl_req.status_code != 200:
         raise HTTPException(status_code=404, detail="ACL check failed")
     if not check_acl_req.json().get("authorized"):
@@ -122,11 +122,11 @@ def read_board(board_id: int, request: Request, db: Session = Depends(get_db)):
     if board is None:
         raise HTTPException(status_code=404, detail="Board not found")
     privilege = 'editor'
-    check_acl_req = check_acl(f"board:{board.name}", "editor", user_email)
+    check_acl_req = check_acl(f"boards:{board.name}", "editor", user_email)
     if check_acl_req.status_code != 200:
         raise HTTPException(status_code=404, detail="ACL check failed")
     if not check_acl_req.json().get("authorized"):
-        check_acl_req = check_acl(f"board:{board.name}", "viewer", user_email)
+        check_acl_req = check_acl(f"boards:{board.name}", "viewer", user_email)
         if check_acl_req.status_code != 200:
             raise HTTPException(status_code=404, detail="ACL check failed")
         if not check_acl_req.json().get("authorized"):
@@ -180,7 +180,8 @@ def share_board(request: Request, share_dto: ShareDTO, db: Session = Depends(get
     if board is None:
         raise HTTPException(status_code=404, detail="Board not found")
 
-    check_acl_req = check_acl(f"board:{board.name}", "owner", user_email)
+    check_acl_req = check_acl(f"boards:{board.name}", "owner", user_email)
+    print(check_acl_req.json())
     if check_acl_req.status_code != 200:
         raise HTTPException(status_code=404, detail="ACL check failed")
 
@@ -191,7 +192,7 @@ def share_board(request: Request, share_dto: ShareDTO, db: Session = Depends(get
     if shared_user is None:
         raise HTTPException(status_code=404, detail="User not found")
 
-    response = create_acl(f"board:{board.name}", role, email)
+    response = create_acl(f"boards:{board.name}", role, email)
     if response.status_code != 200:
         raise HTTPException(status_code=404, detail="ACL not created")
     if crud.get_permissions(db, shared_user.id, board.id) is not None:
@@ -216,7 +217,7 @@ def unshare_board(request: Request, share_dto: ShareDTO, db: Session = Depends(g
     if board is None:
         raise HTTPException(status_code=404, detail="Board not found")
 
-    check_acl_req = check_acl(f"board:{board.name}", "owner", user_email)
+    check_acl_req = check_acl(f"boards:{board.name}", "owner", user_email)
     print(check_acl_req.json())
     print(user_email)
     if check_acl_req.status_code != 200:
@@ -229,7 +230,7 @@ def unshare_board(request: Request, share_dto: ShareDTO, db: Session = Depends(g
     if shared_user is None:
         raise HTTPException(status_code=404, detail="User not found")
 
-    response = delete_acl(f"board:{board.name}", email)
+    response = delete_acl(f"boards:{board.name}", email)
     if response.status_code != 200:
         raise HTTPException(status_code=404, detail="ACL not deleted")
     crud.delete_permissions(db, shared_user.id, board.id)
@@ -245,7 +246,7 @@ def create_board(board: BoardCreate, request: Request, db: Session = Depends(get
     user = crud.find_user_by_email(db, user_email)
     board = crud.create_board(db, board, user.id)
     print("Board:", board)
-    response = create_acl(f"board:{board.name}", "owner", user_email)
+    response = create_acl(f"boards:{board.name}", "owner", user_email)
     if response.status_code != 200:
         raise HTTPException(status_code=404, detail="ACL not created")
     crud.create_permissions(db, user.id, board.id, "owner")
@@ -270,14 +271,14 @@ def delete_board(board_id: int, request: Request, db: Session = Depends(get_db))
     board = crud.get_board(db, board_id)
     if board is None:
         raise HTTPException(status_code=404, detail="Board not found")
-    check_acl_req = check_acl(f"board:{board.name}", "owner", user_email)
+    check_acl_req = check_acl(f"boards:{board.name}", "owner", user_email)
     if check_acl_req.status_code != 200:
         raise HTTPException(status_code=404, detail="ACL check failed")
     if not check_acl_req.json().get("authorized"):
         raise HTTPException(status_code=404, detail="Not authorized to delete")
     relations = crud.get_all_relations_for_board(db, board_id)
     for relation in relations:
-        delete_acl(f"board:{board.name}", crud.get_user(db, relation.user_id).email)
+        delete_acl(f"boards:{board.name}", crud.get_user(db, relation.user_id).email)
     crud.delete_all_relations(db, board_id)
     crud.delete_board(db, board_id)
     return {"message": "Board deleted"}
